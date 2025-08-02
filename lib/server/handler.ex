@@ -1,5 +1,6 @@
 defmodule Server.Handler do
   alias Server.Conv
+  alias Server.BearController
 
   import Server.Plugins, only: [track: 1, rewrite_path: 1, log: 1]
   import Server.Parser, only: [parse: 1]
@@ -37,16 +38,21 @@ defmodule Server.Handler do
       |> handle_file(conv)
   end
 
-  def route(%Conv{method: "GET", path: "/bear"} = conv) do
-    %{ conv | resp_body: "Teddy, Smokey, Paddington" , status: 200}
+  def route(%Conv{method: "GET", path: "/bears"} = conv) do
+    BearController.index(conv)
   end
 
-  def route(%Conv{method: "GET", path: "/bear/" <> id} = conv) do
-    %{ conv | resp_body: "Bear #{id}" , status: 200}
+  def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
+    params = Map.put(conv.params, "id", id)
+    BearController.show(%Conv{conv | params: params})
   end
 
   def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
     %{ conv | resp_body: "Bears, Lions, Tigers" , status: 200}
+  end
+
+  def route(%Conv{method: "POST", path: "/bears"} = conv) do
+    BearController.create(conv)
   end
 
   def route(%Conv{} = conv) do
@@ -65,7 +71,19 @@ defmodule Server.Handler do
 end
 
 request = """
-GET /bear/1 HTTP/1.1
+GET /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Server.Handler.handle(request)
+
+IO.puts(response)
+
+request = """
+GET /bears/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
@@ -123,3 +141,18 @@ Accept: */*
 response = Server.Handler.handle(request)
 
 IO.puts(response)
+
+request = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+name=Baloo&type=Brown
+"""
+
+response = Server.Handler.handle(request)
+
+IO.puts response

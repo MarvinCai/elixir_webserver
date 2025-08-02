@@ -1,5 +1,10 @@
 defmodule Server.Conv do
-  defstruct method: "", path: "", resp_body: "", status: nil
+  defstruct method: "",
+            path: "",
+            resp_body: "",
+            params: %{},
+            headers: %{},
+            status: nil
 
   def full_status(%Server.Conv{} = conv) do
     "#{conv.status} #{status_reason(conv.status)}"
