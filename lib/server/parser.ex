@@ -2,12 +2,12 @@ defmodule Server.Parser do
   alias Server.Conv
 
   def parse(request) do
-    [top, params] = String.split(request, "\n\n")
+    [top, params] = String.split(request, "\r\n\r\n")
 
-    [rquest_method | headers_lines] = String.split(top, "\n")
+    [rquest_method | headers_lines] = String.split(top, "\r\n")
     [method, path, _] = String.split(rquest_method, " ")
 
-    headers = parse_headers(headers_lines)# %{})
+    headers = parse_headers(headers_lines)
     params = parse_params(headers["Content-Type"], params)
     IO.inspect(headers, label: "Parsed Headers")
     %Conv{
@@ -17,6 +17,14 @@ defmodule Server.Parser do
     }
   end
 
+  @doc """
+    ## Examples
+      iex> params_string = "name=Baloon&type=Brown"
+      iex> Server.Parser.parse_params("application/x-www-form-urlencoded", params_string)
+      %{"name" => "Baloon", "type" => "Brown"}
+      iex> Server.Parser.parse_params("multipart/form-data", params_string)
+      %{}
+  """
   def parse_params("application/x-www-form-urlencoded", params_str) do
     params_str |> String.trim |> URI.decode_query
   end

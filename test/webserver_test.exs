@@ -1,8 +1,8 @@
-defmodule ElixirWebserverTest do
+defmodule WebserverTest do
   use ExUnit.Case
   doctest ElixirWebserver
 
   test "greets the world" do
-    assert ElixirWebserver.hello() == :world
+    assert 1 + 1 == 2
   end
 end

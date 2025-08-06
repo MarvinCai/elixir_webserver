@@ -2,7 +2,9 @@ defmodule Server.Plugins do
   alias Server.Conv
 
   def track(%Conv{status: 404, path: path} = conv) do
-    IO.puts "#{path} is not available"
+    if Mix.env != :test do
+      IO.puts "#{path} is not available"
+    end
     conv
   end
 
@@ -14,6 +16,11 @@ defmodule Server.Plugins do
 
   def rewrite_path(%Conv{} = conv), do: conv
 
-  def log(%Conv{} = conv), do: IO.inspect conv
+  def log(%Conv{} = conv) do
+    if Mix.env == :dev do
+      IO.inspect conv
+    end
+    conv
+  end
 
 end
