@@ -38,6 +38,10 @@ defmodule Server.Handler do
       |> handle_file(conv)
   end
 
+  def route(%Conv{method: "GET", path: "/api/bears"} = conv) do
+    Server.Api.BearController.index(conv)
+  end
+
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
     BearController.index(conv)
   end
@@ -62,28 +66,10 @@ defmodule Server.Handler do
   def format_response(%Conv{} = conv) do
     """
     HTTP/1.1 #{Conv.full_status(conv)}\r
-    Content-Type: text/html\r
+    Content-Type: #{conv.resp_content_type}\r
     Content-Length: #{String.length(conv.resp_body)}\r
     \r
     #{conv.resp_body}
     """
   end
 end
-
-
-
-
-# request = """
-# POST /bears HTTP/1.1
-# Host: example.com
-# User-Agent: ExampleBrowser/1.0
-# Accept: */*
-# Content-Type: application/x-www-form-urlencoded
-# Content-Length: 21
-
-# name=Baloo&type=Brown
-# """
-
-# response = Server.Handler.handle(request)
-
-# IO.puts response

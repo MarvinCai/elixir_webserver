@@ -2,6 +2,7 @@ defmodule Server.Conv do
   defstruct method: "",
             path: "",
             resp_body: "",
+            resp_content_type: "text/html",
             params: %{},
             headers: %{},
             status: nil
